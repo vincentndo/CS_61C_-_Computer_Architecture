@@ -1,0 +1,14 @@
+Ex 1
+Scenario 1:
+1. cache size = step size (8*4)
+2. 0. does not effect step size
+3. step size = 1.
+
+Scenario 2:
+1. Two words advanced.
+2. 100%. 64 word cache = 64 element array.
+3. Cache blocking.
+
+Scenario 3:
+1. step size = 8 words = 32 bytes = set size. (2 blocks = 8 words)
+2. step size = 1

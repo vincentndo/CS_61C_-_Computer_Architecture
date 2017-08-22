@@ -1,0 +1,9 @@
+Ex 2:
+Non-piplined: 1/(50+55+5)
+Pipelined: 1/(55+5)
+
+Ex 3:
+1. opcode
+2. opALU0: branch
+3. opALU1: R-type, ALI
+4. ALUSrc: I-type

@@ -1,0 +1,11 @@
+1.	.data	Subsequent items store in Data segment at next available address.
+	.word	Store the listed value(s) as 32 bit words on word boundary.
+	.text	Subsequent items (instructions) stored in Text segment at next available address.
+
+2. breakpoints: on side of text segment.
+
+3. green errors on top.
+
+4. 34, 9
+
+5. 0x00400008 <-- n-8

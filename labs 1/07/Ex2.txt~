@@ -1,0 +1,2 @@
+Non-piplined: 1/(50+55+5)
+Pipelined: 1/(55+5)
