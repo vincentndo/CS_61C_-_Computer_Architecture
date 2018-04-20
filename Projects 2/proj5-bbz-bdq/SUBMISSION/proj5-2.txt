@@ -1,0 +1,46 @@
+1. Cluster of size 5:
+	Simple PageRank, Facebook Dataset: 39.28 min
+	Backedges PageRank, Facebook Dataset: 56.23 min
+	Simple PageRank, Enron Dataset: 56.94 min
+	Backedges PageRank, Enron Dataset: 68.02 min
+Cluster of size 10:
+	Simple PageRank, Facebook Dataset: 10.73 min
+	Backedges PageRank, Facebook Dataset: 11.83 min
+	Simple PageRank, Enron Dataset: 12.90 min
+	Backedges PageRank, Enron Dataset: 13.01 min
+
+
+2. SimplePageRank on the 10 instances with a repartition count of 500:
+	Ratio of input file size to runtime for Enron: 4Mb/12.9min=0.31Mb/min, (or 150kedge/12.9min=11.63)
+	Ratio of input file size to runtime for Facebook: 0.8544Mb/10.73min=0.079Mb/min, (or 88kedge/10.73min=8.2)
+The ratio of Enron is 4 times (1.42 times in terms of edge/min) larger than the ratio of Facebook. It does match our expectation. We expect the speed for bigger input file should be larger than the speed for smaller file because the cost for overhead would be smaller in the case of bigger file than smaller one.
+
+
+3. Speedup for 10 instances relative to 5 instances for 20 iterations of BackedgesPageRank on the Enron dataset with a repartition count of 500:
+		68.02min / 13.01min = 5.23
+=> Spark parallellism is effective: speed ~5 times up for the increase of instances twices, i.e. although the number of instances doubled, the speed increases up to 5 times, proving the efficiency of parallelism algorithm in taking advantage of large data.
+In regards to strong scaling, we can see that the time varies much with the number of processors for a fixed total problem size, e.g BackedgesPageRank, Enron Dataset: 5 instances take 68.02 min vs 10 instances take 13.01 min -> nearly 6 times up => strong scaling
+In regards to weak scaling, we also see that the time varies much with the number of processors for a fixed problem size per precessor, e.g SimplePageRank, Facebook Dataset, 5 instances takes 39.28min vs SimplePageRank, Enron Dataset, 10 instances takes 12.9min -> around 3 times up. Since Enron is roughly twice larger than Facebook, increasing the instances by 2 keeps the problem size per processor fixed. Weak scaling due to time varying.
+
+
+4. At the repartition count of 10 our code was the fastest on average: 2.09min compared to 3.17min and 2.29min in the cases of 5 and 20 repartition_counts, respectively. 
+We have 10 instances. When we decreased the partition count, we did not make use of the full instances, resulting in the decrease in speed.
+When we increased the repartition count, each instance had to work on multiple parts, one by one. Thus, it increased overhead cost, the time for transfering from one part to another, leading to the increase of running time.  
+
+
+5. In Step 2, the test case is very small, so its cost can be neglected. We just calculate the cost for running Steps 4 and 5, which are our main parts:
+	Step 4: 5 instances
+		Cost_5 = (39.28 + 56.23 + 56.94 + 68.02)/60 * (5 slaves + 1 master) * $0.0161 = $0.355
+	Step 5: 10 instances
+		Cost_10_500 = (10.73 + 11.83 + 12.9 + 13.01)/60 * (10 slaves + 1 master) * $0.0161 = $0.143
+		Cost_10_other_repartition_counts = (8.86+5.76+3.17+2.09+2.29) / 60 * (10 slaves + 1 master) * $0.0161 = $0.065
+	Total running cost:
+		Running cost = $0.355 + $0.143 + $0.065 = $0.563
+We may want to take into account the cost for setup/login time:
+	Login/setup for 5 instances take 5 min (once)
+	Login/setup for 10 instances take 15 min (7 times)
+	Total login/setup time: (5 + 15*7) / 60 = 1.83 hour
+	We may want to round to 2 hours for waiting/wasting time:
+		Cost_login_setup = 2 * $0.0161 = $0.0322
+
+	Total = $0.563 + $0.0322 = $0.5952

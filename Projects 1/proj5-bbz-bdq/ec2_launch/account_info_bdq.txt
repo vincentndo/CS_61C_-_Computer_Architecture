@@ -1,0 +1,1 @@
+source /home/cc/cs61c/fa15/class/cs61c-bdq/ec2-environment.sh && spark-ec2 get-master cs61c-bdq | tail -n 1 | tee master
